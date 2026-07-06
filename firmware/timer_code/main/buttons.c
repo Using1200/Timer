@@ -1,6 +1,8 @@
 #include "buttons.h"
+#include "app_state.h"
 #include "Freertos/freeRTOS.h"
 #include "FreeRtos/task.h"
+#include "esp_log.h"
 
 
 static const char *TAG = "BUTTONS";
@@ -59,14 +61,14 @@ void btn_task(void* pvParameters){
 
             if (gpio_num == BTN_START)
             {
-                event = event_btn_start;
-                ESP_LOGI(TAG, "Bouton start appuyé");
+                event = EVENT_BTN_START;
+                ESP_LOGI(TAG, "Bouton start appuye");
             }else{
-                event = event_btn_stop;
+                event = EVENT_BTN_STOP;
                 ESP_LOGI(TAG, "Bouton stop appuyé");
             }
 
-            xQueueSend(btn_queue, &event,0); 
+            xQueueSend(btn_event_queue, &event,0); 
         }
     }
 }
