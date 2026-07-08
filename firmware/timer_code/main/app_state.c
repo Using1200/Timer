@@ -1,5 +1,6 @@
 #include "app_state.h"
 #include <string.h>
+#include "esp_log.h"
 
 
 timer_info_t g_timer_info;
@@ -13,6 +14,7 @@ void app_state_init(void){
     g_state_mutex = xSemaphoreCreateMutex();
     g_button_queue = xQueueCreate(10, sizeof(button_event_t));
 
+    memset(&g_timer_info, 0, sizeof(g_timer_info));
     g_timer_info.seconds_remaining = DEFAULT_SECONDS;
     g_timer_info.seconds_set = DEFAULT_SECONDS;
     g_timer_info.state = TIMER_IDLE;
@@ -20,6 +22,11 @@ void app_state_init(void){
 
 
 void app_state_get(timer_info_t *out){
+    /*if (g_state_mutex == NULL) {
+        memset(out, 0, sizeof(timer_info_t));
+        return;
+    }*/
+
     if (xSemaphoreTake(g_state_mutex, portMAX_DELAY) == pdTRUE)
     {
         *out = g_timer_info;
@@ -29,12 +36,15 @@ void app_state_get(timer_info_t *out){
 
 
 void app_state_set_seconds(int seconds){
+    //if (g_state_mutex == NULL) return;
+
     if (xSemaphoreTake(g_state_mutex, portMAX_DELAY) == pdTRUE)
     {
         if (g_timer_info.state == TIMER_IDLE)
         {
             g_timer_info.seconds_remaining = seconds;
             g_timer_info.seconds_set = seconds;
+            ESP_LOGI("app","%03d", seconds);
         }
 
         xSemaphoreGive(g_state_mutex);
@@ -43,8 +53,33 @@ void app_state_set_seconds(int seconds){
     
 }
 
+/*void app_state_set_seconds(int seconds){
+    // DIAGNOSTIC 1 : Est-ce que le mutex est NULL ?
+    if (g_state_mutex == NULL) {
+        ESP_LOGE("app_state", "Erreur: g_state_mutex est NULL !");
+        return;
+    }
+
+    if (xSemaphoreTake(g_state_mutex, portMAX_DELAY) == pdTRUE)
+    {
+        // DIAGNOSTIC 2 : Quel est l'état actuel ?
+        if (g_timer_info.state == TIMER_IDLE)
+        {
+            g_timer_info.seconds_remaining = seconds;
+            g_timer_info.seconds_set = seconds;
+            ESP_LOGI("app", "Nouvelle valeur de secondes : %03d", seconds);
+        } else {
+            ESP_LOGW("app_state", "Changement refuse car l'etat n'est pas IDLE (Etat actuel: %d)", g_timer_info.state);
+        }
+
+        xSemaphoreGive(g_state_mutex);
+    }
+}*/
+
 
 void app_state_start(void){
+    //if (g_state_mutex == NULL) return;
+
     if (xSemaphoreTake(g_state_mutex, portMAX_DELAY))
     {
         if (g_timer_info.state != TIMER_RUNNING)
@@ -58,6 +93,8 @@ void app_state_start(void){
 
 
 void app_state_stop(void){
+    //if (g_state_mutex == NULL) return;
+
     if (xSemaphoreTake(g_state_mutex, portMAX_DELAY))
     {
         g_timer_info.state = TIMER_IDLE;
@@ -68,6 +105,8 @@ void app_state_stop(void){
 }
 
 void app_state_tick_decrement(void){
+    //if (g_state_mutex == NULL) return;
+
     if (xSemaphoreTake(g_state_mutex, portMAX_DELAY))
     {
         if (g_timer_info.state == TIMER_RUNNING)

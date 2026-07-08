@@ -1,7 +1,8 @@
 #include "buttons.h"
 #include "app_state.h"
-#include "Freertos/freeRTOS.h"
-#include "FreeRtos/task.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
 #include "esp_log.h"
 
 
@@ -38,6 +39,8 @@ void btn_init(){
     //attacher le service isr aux gpios
     gpio_isr_handler_add(BTN_START, btn_isr_handle, (void*) BTN_START); 
     gpio_isr_handler_add(BTN_STOP, btn_isr_handle, (void*) BTN_STOP);
+
+    ESP_LOGI(TAG, "boutons initialises");
 }
 
 
@@ -68,7 +71,8 @@ void btn_task(void* pvParameters){
                 ESP_LOGI(TAG, "Bouton stop appuyé");
             }
 
-            xQueueSend(btn_event_queue, &event,0); 
+            xQueueSend(g_button_queue, &event,0); 
         }
     }
 }
+

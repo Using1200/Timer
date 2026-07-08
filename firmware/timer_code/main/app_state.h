@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Freertos/freeRTOS.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "freertos/queue.h"
 
