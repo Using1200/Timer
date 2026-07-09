@@ -1,0 +1,3 @@
+[submodule "firmware/timer_code/components/st7789"]
+	path = firmware/timer_code/components/st7789
+	url = ../tft_driver.git
