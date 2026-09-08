@@ -7,7 +7,7 @@ timer_info_t g_timer_info;
 SemaphoreHandle_t g_state_mutex;
 QueueHandle_t g_button_queue;
 
-#define DEFAULT_SECONDS 60
+#define DEFAULT_SECONDS 0
 
 void app_state_init(void){
 
@@ -42,6 +42,7 @@ void app_state_set_seconds(int seconds){
     {
         if (g_timer_info.state == TIMER_IDLE)
         {
+            //seconds = seconds * 60;
             g_timer_info.seconds_remaining = seconds;
             g_timer_info.seconds_set = seconds;
             ESP_LOGI("app","%03d", seconds);
@@ -52,29 +53,6 @@ void app_state_set_seconds(int seconds){
     }
     
 }
-
-/*void app_state_set_seconds(int seconds){
-    // DIAGNOSTIC 1 : Est-ce que le mutex est NULL ?
-    if (g_state_mutex == NULL) {
-        ESP_LOGE("app_state", "Erreur: g_state_mutex est NULL !");
-        return;
-    }
-
-    if (xSemaphoreTake(g_state_mutex, portMAX_DELAY) == pdTRUE)
-    {
-        // DIAGNOSTIC 2 : Quel est l'état actuel ?
-        if (g_timer_info.state == TIMER_IDLE)
-        {
-            g_timer_info.seconds_remaining = seconds;
-            g_timer_info.seconds_set = seconds;
-            ESP_LOGI("app", "Nouvelle valeur de secondes : %03d", seconds);
-        } else {
-            ESP_LOGW("app_state", "Changement refuse car l'etat n'est pas IDLE (Etat actuel: %d)", g_timer_info.state);
-        }
-
-        xSemaphoreGive(g_state_mutex);
-    }
-}*/
 
 
 void app_state_start(void){

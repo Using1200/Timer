@@ -30,7 +30,7 @@ void potentiometer_task(void *pvParameters){
             {
                 int seconds = (pot_value * TIMER_MAX_SECONDS) / 4095;
                 //ESP_LOGI(TAG,"%04d", seconds);
-                app_state_set_seconds(seconds);
+                app_state_set_seconds(seconds*60);
             }else
             {
                 ESP_LOGE(TAG, "Erruer recuperation valeur du potentiometre");

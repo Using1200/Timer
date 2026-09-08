@@ -1,0 +1,31 @@
+# --- ESP-IDF & Compilations ---
+build/
+sdkconfig
+sdkconfig.old
+sdkconfig.ci
+managed_components/
+dependencies.lock
+
+# --- Fichiers Blender temporaires & backups ---
+*.blend1
+*.blend2
+*.blend3
+*.blend4
+*.blend5
+
+# --- Textures lourdes (à conserver en local) ---
+models/blender/*4K-PNG/
+
+# --- Éditeurs & IDEs ---
+.vscode/
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/c_cpp_properties.json
+.idea/
+
+# --- Fichiers OS & Binaires temporaires ---
+*.o
+*.elf
+*.bin
+.DS_Store
+Thumbs.db
